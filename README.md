@@ -11,10 +11,10 @@
 # Description
 ## Project assumptions
 
-- *Entity*: Issuing Authority (e.g., local government) – issues the credential.
-- *User*: Citizen – stores the credential.
-- *Verifier*: Third party – verifies the authenticity of the credential.
-- *Blockchain*: Credentials ledger - Used for registering hashes/digests of credentials (not personal data).
+- **Entity**: Issuing Authority (e.g., local government) – issues the credential.
+- **User**: Citizen – stores the credential.
+- **Verifier**: Third party – verifies the authenticity of the credential.
+- **Blockchain**: Credentials ledger - Used for registering hashes/digests of credentials (not personal data).
 
 
 ## Key Actors
