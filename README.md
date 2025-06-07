@@ -3,10 +3,15 @@
 # Introduction
 
 # Runnging project
+## Building project
+```
+cargo build
+```
 
-## Building
-
-## Runing promgram
+## Runing program
+```
+cargo run
+```
 
 # Description
 ## Project assumptions
@@ -61,55 +66,3 @@ flowchart LR
     Credential1 --- Subject1["Subject"]
     Credential1 --- ValidDuration1["ValidDuration"]
 ```
-
-### Blockchain
-```mermaid
-flowchart LR
-    Blockchain --- ...
-    ... --- Block2["Block"]
-    Block2 --- Block1["Block"]
-    Block1 --- Block0["Block"]
-```
-
-### Block
-```mermaid
-flowchart LR
-    Block0["Block"] --- new_credentials["NewCredentialsList"]
-    Block0 --- revoked_credentials["RevokedCredentialsList"]
-    Block0 --- timestamp["Timestamp"]
-    Block0 --- hash["Current Block Hash"]
-    Block0 --- previous_hash["Previous Block Hash"]
-    Block0 --- signer["Signer"]
-    Block0 --- signature["SignedCredential"]
-```
-
-### New/Revoked SignedCredential List (Transactions)
-```mermaid
-flowchart LR
-    new_credentials["NewCredentialsList"] --- SignedCredential0["SignedCredential"]
-    new_credentials --- SignedCredential1["SignedCredential"]
-    new_credentials --- SignedCredential2["..."]
-
-    revoked_credentials["RevokedCredentialsList"] --- SignedCredential3["SignedCredential"]
-    revoked_credentials --- SignedCredential4["SignedCredential"]
-    revoked_credentials --- SignedCredential5["..."]
-```
-
-### New/Revoked SignedCredential
-```mermaid
-flowchart LR
-    SignedCredential0["SignedCredential"] --Hashing&Signing --- Credential0["Credential"]
-    Credential0 --- Uuid0["Uuid"]
-    Credential0 --- Attribute0["Attribute"]
-    Credential0 --- Issuer0["Issuer"]
-    Credential0 --- Subject0["Subject"]
-    Credential0 --- ValidDuration0["ValidDuration"]
-
-    SignedCredential3["SignedCredential"] --Revoking&Hashing&Signing --- Credential1["Credential"]
-    Credential1 --- Uuid1["Uuid"]
-    Credential1 --- Attribute1["Attribute"]
-    Credential1 --- Issuer1["Issuer"]
-    Credential1 --- Subject1["Subject"]
-    Credential1 --- ValidDuration1["ValidDuration"]
-```
-
