@@ -16,7 +16,7 @@ fn main() {
     let mut block = Block::new(issuer_a.clone());
     let mut credential = Credential::new(attribute, issuer_a.clone(), subject_a.clone(), valid);
     let signed = credential.sign(&issuer_a_signing, false);
-    credential.print_json();
+    println!("{credential}");
     block.add_credential(signed, false);
     blockchain.add_block(block, &issuer_a_signing);
     let mut block = Block::new(issuer_b);
@@ -25,5 +25,5 @@ fn main() {
     blockchain.add_block(block, &issuer_b_signing);
     let result = blockchain.check_credential(&credential);
     println!("Check result: {result}");
-    blockchain.print_json();
+    println!("{blockchain}");
 }
