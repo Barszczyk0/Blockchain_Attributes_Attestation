@@ -1,3 +1,4 @@
+use std::fmt;
 use std::fmt::{Display, Formatter};
 
 use chrono::{DateTime, Utc};
@@ -74,10 +75,8 @@ impl Block {
 }
 
 impl Display for Block {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_str("Block:\n")?;
-        f.write_str(&serde_json::to_string_pretty(&self).unwrap())?;
-        f.write_str("\n")
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.write_str(&serde_json::to_string_pretty(&self).unwrap())
     }
 }
 
@@ -116,9 +115,7 @@ impl Blockchain {
 }
 
 impl Display for Blockchain {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_str("Blockchain:\n")?;
-        f.write_str(&serde_json::to_string_pretty(&self).unwrap())?;
-        f.write_str("\n")
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.write_str(&serde_json::to_string_pretty(&self).unwrap())
     }
 }

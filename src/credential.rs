@@ -12,25 +12,21 @@ use crate::hash::Hash;
 /// Custom serialization for `VerifyingKey`
 mod verifying_key_serde {
     use ed25519_dalek::VerifyingKey;
-    use hex::{decode, encode};
-    use serde::{Deserialize, Deserializer, Serializer};
+    use serde::{Deserialize, Deserializer, Serializer, de};
 
     pub fn serialize<S>(key: &VerifyingKey, serializer: S) -> Result<S::Ok, S::Error>
     where S: Serializer {
-        let hex_string = encode(key.as_bytes());
+        let hex_string = hex::encode(key.as_bytes());
         serializer.serialize_str(&hex_string)
     }
 
     pub fn deserialize<'de, D>(deserializer: D) -> Result<VerifyingKey, D::Error>
     where D: Deserializer<'de> {
-        let hex_str: &str = Deserialize::deserialize(deserializer)?;
-        let bytes = decode(hex_str).map_err(serde::de::Error::custom)?;
-        if bytes.len() != 32 {
-            return Err(serde::de::Error::custom("VerifyingKey must be 32 bytes"));
-        }
-        let mut array = [0u8; 32];
-        array.copy_from_slice(&bytes);
-        VerifyingKey::from_bytes(&array).map_err(serde::de::Error::custom)
+        let hex_str: String = Deserialize::deserialize(deserializer)?;
+        let bytes = hex::decode(hex_str).map_err(de::Error::custom)?;
+        let bytes =
+            bytes.try_into().map_err(|_| de::Error::custom("Verifying key must be 32 bytes"))?;
+        VerifyingKey::from_bytes(&bytes).map_err(de::Error::custom)
     }
 }
 
@@ -59,7 +55,13 @@ impl Issuer {
     }
 }
 
-#[derive(Debug, Clone, Serialize)]
+impl Display for Issuer {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.write_str(&serde_json::to_string_pretty(self).unwrap())
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Subject {
     pub uuid: Uuid,
     pub name: String,
@@ -80,7 +82,13 @@ impl Subject {
     }
 }
 
-#[derive(Debug, Clone, Serialize)]
+impl Display for Subject {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.write_str(&serde_json::to_string_pretty(self).unwrap())
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ValidDuration {
     pub from: NaiveDate,
     pub to: Option<NaiveDate>,
@@ -98,27 +106,23 @@ impl ValidDuration {
     }
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Attribute {
     pub name: String,
     pub value: String,
-    pub description: String,
 }
 
 impl Attribute {
     #[must_use]
-    pub fn new(name: String, value: String, description: String) -> Self {
-        Self { name, value, description }
-    }
+    pub fn new(name: String, value: String) -> Self { Self { name, value } }
 
     fn hash(&self, hasher: &mut impl Digest) {
         hasher.update(&self.name);
         hasher.update(&self.value);
-        hasher.update(&self.description);
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Credential {
     pub uuid: Uuid,
     pub attribute: Attribute,
@@ -150,7 +154,8 @@ impl Credential {
         hasher.finalize().into()
     }
 
-    pub fn sign(&mut self, signer: &impl Signer<Signature>, revoking: bool) -> SignedCredential {
+    #[must_use]
+    pub fn sign(&self, signer: &SigningKey, revoking: bool) -> SignedCredential {
         let hash = self.hash(revoking);
         let signature = signer.sign(&hash.0).into();
         SignedCredential::new(hash, signature)
@@ -159,9 +164,7 @@ impl Credential {
 
 impl Display for Credential {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        f.write_str("Credential:\n")?;
-        f.write_str(&serde_json::to_string_pretty(self).unwrap())?;
-        f.write_str("\n")
+        f.write_str(&serde_json::to_string_pretty(self).unwrap())
     }
 }
 

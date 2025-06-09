@@ -1,5 +1,5 @@
 use ed25519_dalek::Signature;
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use sha2::Sha512;
 use sha2::digest::Output;
 
@@ -28,13 +28,10 @@ impl Serialize for Hash {
 impl<'de> Deserialize<'de> for Hash {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where D: Deserializer<'de> {
-        let s: &str = Deserialize::deserialize(deserializer)?;
-        let bytes = hex::decode(s).map_err(serde::de::Error::custom)?;
-        if bytes.len() != 64 {
-            return Err(serde::de::Error::custom("Hash must be 64 bytes"));
-        }
-        let mut array = [0u8; 64];
-        array.copy_from_slice(&bytes);
-        Ok(Self(array))
+        let s: String = Deserialize::deserialize(deserializer)?;
+        let bytes = hex::decode(s).map_err(de::Error::custom)?;
+        let bytes =
+            bytes.try_into().map_err(|_| de::Error::custom("Verifying key must be 32 bytes"))?;
+        Ok(Self(bytes))
     }
 }
