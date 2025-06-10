@@ -112,8 +112,8 @@ cargo run -- credentials add <issuer_index> <subject_index> <credential_name> <c
 
 ### Block creation
 ```
-cargo run --  block new <issuer_index>
-cargo run --  block add <credential_index>
+cargo run -- block new <issuer_index>
+cargo run -- block add <credential_index>
 ```
 
 |![](Images/addblock.png)|
