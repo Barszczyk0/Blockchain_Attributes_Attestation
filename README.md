@@ -19,7 +19,6 @@ This project demostrate blockchain-based attestation system for managing attribu
 | Blockchain Network | A distributed ledger used to anchor cryptographic proofs (e.g., hashes of credentials), not to store personal data. |
 
 ## Structure graph
-### Full Graph
 ```mermaid
 flowchart LR
     Blockchain --Hashing&Signing --- Block0["Block"]
