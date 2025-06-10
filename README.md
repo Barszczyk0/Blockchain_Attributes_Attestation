@@ -135,7 +135,7 @@ cargo run -- block finalize
 cargo run -- blockchain verify <credential_index>
 ```
 
-|![](Images/veryfication.png)|
+|![](Images/verification.png)|
 |:--:| 
 | *Credential verification* |
 
