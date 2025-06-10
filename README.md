@@ -130,14 +130,14 @@ cargo run -- block finalize
 |:--:| 
 | *Adding  block to blockchain* |
 
-### Credential veryfication
+### Credential verification
 ```
 cargo run -- blockchain verify <credential_index>
 ```
 
 |![](Images/veryfication.png)|
 |:--:| 
-| *Credential veryfication* |
+| *Credential verification* |
 
 
 ### Credential revokation
