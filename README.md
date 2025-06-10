@@ -10,7 +10,6 @@ This project demostrate blockchain-based attestation system for managing attribu
 - **Verifier**: Third party – verifies the authenticity of the credential.
 - **Blockchain**: Credentials ledger - Used for registering hashes/digests of credentials (not personal data).
 
-
 ## Key Actors
 | Role    | Description |
 | :--------: | :-------: |
@@ -62,6 +61,13 @@ flowchart LR
 cargo build --all-features
 ```
 
+## Testing project
+```
+cargo test
+// OR
+cargo tarpaulin --skip-clean
+```
+
 ## Runing program
 ```
 cargo run -- --help
@@ -74,7 +80,6 @@ cargo run -- blockchain init
 |![](Images/blockchaininit.png)|
 |:--:| 
 | *Blockchain initialization* |
-
 
 ### Issuer creation 
 ```
