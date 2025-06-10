@@ -168,7 +168,7 @@ impl Display for Credential {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SignedCredential {
     pub credential: Hash,
     pub signature: Hash,
@@ -186,5 +186,102 @@ impl SignedCredential {
     pub fn update_hash(&self, hasher: &mut impl Digest) {
         hasher.update(self.credential.0);
         hasher.update(self.signature.0);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use chrono::NaiveDate;
+    use serde_json;
+
+    use super::*;
+
+    #[test]
+    fn test_issuer_creation_and_display() {
+        let (issuer, _) = Issuer::new("Governmnent Authority".to_string());
+        let display = format!("{issuer}");
+        assert!(display.contains("Governmnent Authority"));
+        assert!(display.contains(&issuer.uuid.to_string()));
+    }
+
+    #[test]
+    fn test_subject_creation_and_display() {
+        let subject = Subject::new("Alice".to_string(), "Smith".to_string());
+        let display = format!("{subject}");
+        assert!(display.contains("Alice"));
+        assert!(display.contains("Smith"));
+    }
+
+    #[test]
+    fn test_valid_duration_hashing() {
+        let valid = ValidDuration::new(
+            NaiveDate::from_ymd_opt(2024, 1, 1).unwrap(),
+            Some(NaiveDate::from_ymd_opt(2030, 12, 31).unwrap()),
+        );
+        let mut hasher = Sha512::new();
+        valid.hash(&mut hasher);
+        let hash = hasher.finalize();
+        assert_eq!(hash.len(), 64);
+    }
+
+    #[test]
+    fn test_attribute_creation_and_hashing() {
+        let attr =
+            Attribute::new("Company Owner".to_string(), "Owner of Super Company".to_string());
+        let mut hasher = Sha512::new();
+        attr.hash(&mut hasher);
+        let hash = hasher.finalize();
+        assert_eq!(hash.len(), 64);
+    }
+
+    #[test]
+    fn test_credential_sign_and_verify() {
+        let (issuer, signing_key) = Issuer::new("Issuer A".to_string());
+        let subject = Subject::new("Bob".to_string(), "Builder".to_string());
+        let attribute = Attribute::new("Digital Identity".to_string(), "Bob Builder".to_string());
+        let valid = ValidDuration::new(
+            NaiveDate::from_ymd_opt(2023, 1, 1).unwrap(),
+            Some(NaiveDate::from_ymd_opt(2025, 1, 1).unwrap()),
+        );
+        let credential = Credential::new(attribute, issuer.clone(), subject, valid);
+        let signed = credential.sign(&signing_key, false);
+        assert!(signed.verify(&issuer.verifying));
+    }
+
+    #[test]
+    fn test_credential_hash_changes_on_revoke_flag() {
+        let (issuer, _) = Issuer::new("Issuer A".to_string());
+        let subject = Subject::new("Bob".to_string(), "Builder".to_string());
+        let attribute =
+            Attribute::new("Driving Licence".to_string(), "Driving Licence Category C".to_string());
+        let valid = ValidDuration::new(
+            NaiveDate::from_ymd_opt(2022, 1, 1).unwrap(),
+            Some(NaiveDate::from_ymd_opt(2024, 1, 1).unwrap()),
+        );
+        let credential = Credential::new(attribute, issuer, subject, valid);
+        let hash_issue = credential.hash(false);
+        let hash_revoke = credential.hash(true);
+        assert_ne!(hash_issue.0, hash_revoke.0);
+    }
+
+    #[test]
+    fn test_signed_credential_update_hash() {
+        let data = [1u8; 64];
+        let hash = Hash(data);
+        let signed = SignedCredential::new(Hash(data), hash);
+        let mut hasher = Sha512::new();
+        signed.update_hash(&mut hasher);
+        let hash = hasher.finalize();
+        assert_eq!(hash.len(), 64);
+    }
+
+    #[test]
+    fn test_issuer_serialization_roundtrip() {
+        let (issuer, _) = Issuer::new("SerialTest".into());
+        let json = serde_json::to_string(&issuer).unwrap();
+        let deserialized: Issuer = serde_json::from_str(&json).unwrap();
+        assert_eq!(issuer.name, deserialized.name);
+        assert_eq!(issuer.uuid, deserialized.uuid);
+        assert_eq!(issuer.verifying.as_bytes(), deserialized.verifying.as_bytes());
     }
 }

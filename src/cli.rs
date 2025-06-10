@@ -76,7 +76,9 @@ fn save_credentials(credentials: &[CredentialFull]) -> Result<(), &'static str> 
 
 fn open_issuers() -> Result<Vec<IssuerFull>, &'static str> {
     let reader = File::open_buffered("issuers.json").map_err(|_| "Failed to open issuers file")?;
-    serde_json::from_reader(reader).inspect_err(|e| println!("{e}")).map_err(|_| "Failed to parse issuers")
+    serde_json::from_reader(reader)
+        .inspect_err(|e| println!("{e}"))
+        .map_err(|_| "Failed to parse issuers")
 }
 
 fn save_issuers(issuers: &[IssuerFull]) -> Result<(), &'static str> {

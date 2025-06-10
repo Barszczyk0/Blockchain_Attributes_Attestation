@@ -1,17 +1,6 @@
 # Blockchain Attributes Attestation
-
 # Introduction
-
-# Runnging project
-## Building project
-```
-cargo build
-```
-
-## Runing program
-```
-cargo run
-```
+This project demostrate blockchain-based attestation system for managing attributes.
 
 # Description
 ## Project assumptions
@@ -66,3 +55,97 @@ flowchart LR
     Credential1 --- Subject1["Subject"]
     Credential1 --- ValidDuration1["ValidDuration"]
 ```
+
+# Runnging project
+## Building project
+```
+cargo build --all-features
+```
+
+## Runing program
+```
+cargo run -- --help
+```
+
+### Blockchain initialization
+```
+cargo run -- blockchain init
+```
+|![](Images/blockchaininit.png)|
+|:--:| 
+| *Blockchain initialization* |
+
+
+### Issuer creation 
+```
+cargo run -- issuers add <issuer_name>
+```
+
+|![](Images/addissuer.png)|
+|:--:| 
+| *Issuer creation* |
+
+
+### Subject creation
+```
+cargo run -- subjects add <name> <surname>
+```
+
+|![](Images/addsubject.png)|
+|:--:| 
+| *Subject creation* |
+
+### Credential creation
+```
+cargo run -- credentials add <issuer_index> <subject_index> <credential_name> <credential_value> <from> <to>
+```
+
+|![](Images/addsubject.png)|
+|:--:| 
+| *Credential creation* |
+
+
+### Block creation
+```
+cargo run --  block new <issuer_index>
+cargo run --  block add <credential_index>
+```
+
+|![](Images/addblock.png)|
+|:--:| 
+| *Block creation* |
+
+
+### Adding  block to blockchain (finalize)
+```
+cargo run -- block finalize
+```
+
+|![](Images/finalizeblock.png)|
+|:--:| 
+| *Adding  block to blockchain* |
+
+### Credential veryfication
+```
+cargo run -- blockchain verify <credential_index>
+```
+
+|![](Images/veryfication.png)|
+|:--:| 
+| *Credential veryfication* |
+
+
+### Credential revokation
+```
+cargo run -- blockchain revoke <credential_index>
+```
+
+### List contents of Issuer, Subject, Credential, Block, Blockchain
+```
+cargo run -- issuers list
+cargo run -- subjects list
+cargo run -- credentials list
+cargo run -- block display
+cargo run -- blockchain display
+```
+

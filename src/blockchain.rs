@@ -113,9 +113,111 @@ impl Blockchain {
         found
     }
 }
-
 impl Display for Blockchain {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.write_str(&serde_json::to_string_pretty(&self).unwrap())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use chrono::NaiveDate;
+
+    use super::*;
+    use crate::credential::{Attribute, Subject, ValidDuration};
+
+    fn sample_credential() -> (Credential, SigningKey) {
+        let (issuer, signing) = Issuer::new("Test Issuer".to_string());
+        let subject = Subject::new("Alice".to_string(), "Doe".to_string());
+        let attr =
+            Attribute::new("Driving Licence".to_string(), "Driving Licence Category B".to_string());
+        let valid = ValidDuration::new(
+            NaiveDate::from_ymd_opt(2024, 1, 1).unwrap(),
+            Some(NaiveDate::from_ymd_opt(2030, 1, 1).unwrap()),
+        );
+        let credential = Credential::new(attr, issuer, subject, valid);
+        (credential, signing)
+    }
+
+    #[test]
+    fn test_block_add_credential_and_finalize() {
+        let (credential, signing) = sample_credential();
+        let signed = credential.sign(&signing, false);
+        let issuer = credential.issuer.clone();
+        let mut block = Block::new(issuer);
+        block.add_credential(signed, false);
+        block.finalize(Hash::default(), &signing);
+        assert_ne!(block.hash.0, [0u8; 64]);
+        assert_ne!(block.signature.0, [0u8; 64]);
+    }
+
+    #[test]
+    fn test_block_add_revoked_credential() {
+        let (credential, signing) = sample_credential();
+        let signed = credential.sign(&signing, true);
+        let issuer = credential.issuer.clone();
+        let mut block = Block::new(issuer);
+        block.add_credential(signed.clone(), true);
+        block.finalize(Hash::default(), &signing);
+        assert!(block.revoked_credentials.iter().any(|c| c.credential == signed.credential));
+    }
+
+    #[test]
+    fn test_blockchain_add_block_and_check_credential() {
+        let (credential, signing) = sample_credential();
+        let signed = credential.sign(&signing, false);
+        let issuer = credential.issuer.clone();
+
+        let mut block = Block::new(issuer);
+        block.add_credential(signed, false);
+
+        let mut chain = Blockchain::new();
+        chain.add_block(block, &signing);
+
+        assert!(chain.check_credential(&credential));
+    }
+
+    #[test]
+    fn test_blockchain_revoked_credential_returns_false() {
+        let (credential, signing) = sample_credential();
+        let issuer = credential.issuer.clone();
+        let signed = credential.sign(&signing, false);
+        let revoked = credential.sign(&signing, true);
+
+        let mut block = Block::new(issuer);
+        block.add_credential(signed, false);
+        block.add_credential(revoked, true);
+
+        let mut chain = Blockchain::new();
+        chain.add_block(block, &signing);
+
+        assert!(!chain.check_credential(&credential));
+    }
+
+    #[test]
+    fn test_block_display_serialization() {
+        let (credential, signing) = sample_credential();
+        let signed = credential.sign(&signing, false);
+        let issuer = credential.issuer.clone();
+        let mut block = Block::new(issuer);
+        block.add_credential(signed, false);
+        block.finalize(Hash::default(), &signing);
+        let output = block.to_string();
+        assert!(output.contains("new_credentials"));
+        assert!(output.contains("timestamp"));
+    }
+
+    #[test]
+    fn test_blockchain_display_serialization() {
+        let (credential, signing) = sample_credential();
+        let signed = credential.sign(&signing, false);
+        let issuer = credential.issuer.clone();
+        let mut block = Block::new(issuer);
+        block.add_credential(signed, false);
+
+        let mut chain = Blockchain::new();
+        chain.add_block(block, &signing);
+        let output = chain.to_string();
+        assert!(output.contains("chain"));
     }
 }
