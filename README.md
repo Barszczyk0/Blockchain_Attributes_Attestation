@@ -71,6 +71,10 @@ cargo tarpaulin --skip-clean
 ```
 attributes_attestation --help
 ```
+|![](Images/help.png)|
+|:--:| 
+| *Help informations* |
+
 
 ### Blockchain initialization
 ```
@@ -79,6 +83,7 @@ attributes_attestation blockchain init
 |![](Images/blockchaininit.png)|
 |:--:| 
 | *Blockchain initialization* |
+
 
 ### Issuer creation 
 ```
@@ -98,6 +103,7 @@ attributes_attestation subjects add <name> <surname>
 |![](Images/addsubject.png)|
 |:--:| 
 | *Subject creation* |
+
 
 ### Credential creation
 ```
@@ -141,8 +147,16 @@ attributes_attestation blockchain verify <credential_index>
 
 ### Credential revokation
 ```
-attributes_attestation blockchain revoke <credential_index>
+attributes_attestation block new <issuer_index>
+attributes_attestation block revoke <credential_index>
+attributes_attestation block finalize
 ```
+|![](Images/revocation1.png)|
+|:--:| 
+| *Credential revocation* |
+|![](Images/revocation2.png)|
+| *Credential revocation* |
+
 
 ### List contents of Issuer, Subject, Credential, Block, Blockchain
 ```
