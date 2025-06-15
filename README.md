@@ -69,12 +69,12 @@ cargo tarpaulin --skip-clean
 
 ## Runing program
 ```
-cargo run -- --help
+attributes_attestation --help
 ```
 
 ### Blockchain initialization
 ```
-cargo run -- blockchain init
+attributes_attestation blockchain init
 ```
 |![](Images/blockchaininit.png)|
 |:--:| 
@@ -82,7 +82,7 @@ cargo run -- blockchain init
 
 ### Issuer creation 
 ```
-cargo run -- issuers add <issuer_name>
+attributes_attestation issuers add <issuer_name>
 ```
 
 |![](Images/addissuer.png)|
@@ -92,7 +92,7 @@ cargo run -- issuers add <issuer_name>
 
 ### Subject creation
 ```
-cargo run -- subjects add <name> <surname>
+attributes_attestation subjects add <name> <surname>
 ```
 
 |![](Images/addsubject.png)|
@@ -101,7 +101,7 @@ cargo run -- subjects add <name> <surname>
 
 ### Credential creation
 ```
-cargo run -- credentials add <issuer_index> <subject_index> <credential_name> <credential_value> <from> <to>
+attributes_attestation credentials add <issuer_index> <subject_index> <credential_name> <credential_value> <from> <to>
 ```
 
 |![](Images/addsubject.png)|
@@ -111,8 +111,8 @@ cargo run -- credentials add <issuer_index> <subject_index> <credential_name> <c
 
 ### Block creation
 ```
-cargo run -- block new <issuer_index>
-cargo run -- block add <credential_index>
+attributes_attestation block new <issuer_index>
+attributes_attestation block add <credential_index>
 ```
 
 |![](Images/addblock.png)|
@@ -122,7 +122,7 @@ cargo run -- block add <credential_index>
 
 ### Adding  block to blockchain (finalize)
 ```
-cargo run -- block finalize
+attributes_attestation block finalize
 ```
 
 |![](Images/finalizeblock.png)|
@@ -131,7 +131,7 @@ cargo run -- block finalize
 
 ### Credential verification
 ```
-cargo run -- blockchain verify <credential_index>
+attributes_attestation blockchain verify <credential_index>
 ```
 
 |![](Images/verification.png)|
@@ -141,15 +141,15 @@ cargo run -- blockchain verify <credential_index>
 
 ### Credential revokation
 ```
-cargo run -- blockchain revoke <credential_index>
+attributes_attestation blockchain revoke <credential_index>
 ```
 
 ### List contents of Issuer, Subject, Credential, Block, Blockchain
 ```
-cargo run -- issuers list
-cargo run -- subjects list
-cargo run -- credentials list
-cargo run -- block display
-cargo run -- blockchain display
+attributes_attestation issuers list
+attributes_attestation subjects list
+attributes_attestation credentials list
+attributes_attestation block display
+attributes_attestation blockchain display
 ```
 
